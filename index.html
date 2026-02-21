@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Para Marissa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #ffb3c1;
+            --bg: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- CANVAS DE DESTELLOS --- */
+        #sparkles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- INTRO OVERLAY --- */
+        #intro {
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #intro h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeInOut 3s forwards;
+        }
+
+        #intro p {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            margin-top: 20px;
+            color: var(--accent);
+            opacity: 0;
+            animation: fadeIn 1s forwards 2s;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; filter: blur(10px); }
+            50% { opacity: 1; filter: blur(0px); }
+            100% { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 0.6; }
+        }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        main {
+            position: relative;
+            z-index: 10;
+            padding: env(safe-area-inset-top) 25px 100px;
+        }
+
+        .hero {
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .hero span {
+            color: var(--accent);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #888;
+            max-width: 280px;
+        }
+
+        /* --- MENU INTERACTIVO --- */
+        .menu-grid {
+            display: grid;
+            gap: 20px;
+            margin-top: 50px;
+        }
+
+        .menu-item {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 24px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .menu-item span {
+            font-size: 0.85rem;
+            opacity: 0.5;
+            font-weight: 300;
+        }
+
+        /* --- EFECTO DE LUZ EN BOTONES --- */
+        .menu-item::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,179,193,0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .menu-item:hover::after { opacity: 1; }
+
+        /* --- SCROLL ANIMATION CLASS --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    </style>
+</head>
+<body onclick="createTapSparkle(event)">
+
+    <div id="intro" onclick="this.style.opacity='0'; setTimeout(()=>this.remove(), 1500)">
+        <h2>Marissa</h2>
+        <p>TOCA PARA ENTRAR</p>
+    </div>
+
+    <canvas id="sparkles"></canvas>
+
+    <main>
+        <section class="hero reveal">
+            <span>Hoy celebramos</span>
+            <h1>5 Meses<br>Contigo.</h1>
+            <p>Un espacio íntimo diseñado solo para nosotros dos.</p>
+        </section>
+
+        <section class="menu-grid">
+            <a href="nuestros_momentos.html" class="menu-item reveal">
+                <h3>Momentos</h3>
+                <span>El resumen de nuestros 150 días.</span>
+            </a>
+            
+            <a href="razones.html" class="menu-item reveal" style="transition-delay: 0.1s;">
+                <h3>Por qué tú</h3>
+                <span>Las pequeñas cosas que te hacen única.</span>
+            </a>
+
+            <a href="playlist.html" class="menu-item reveal" style="transition-delay: 0.2s;">
+                <h3>Sintonía</h3>
+                <span>La música que suena a nosotros.</span>
+            </a>
+
+            <a href="carta.html" class="menu-item reveal" style="transition-delay: 0.3s;">
+                <h3>Una Carta</h3>
+                <span>Lo que mi voz no alcanza a decir.</span>
+            </a>
+        </section>
+    </main>
+
+    <script>
+        // --- SISTEMA DE PARTÍCULAS (STARDUST) ---
+        const canvas = document.getElementById('sparkles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor(x, y, isTap = false) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || Math.random() * canvas.height;
+                this.size = Math.random() * (isTap ? 4 : 1.5) + 0.5;
+                this.speedX = (Math.random() - 0.5) * (isTap ? 5 : 0.5);
+                this.speedY = (Math.random() - 0.5) * (isTap ? 5 : 0.5);
+                this.opacity = 1;
+                this.isTap = isTap;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if(this.isTap) this.opacity -= 0.02;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 179, 193, ${this.isTap ? this.opacity : 0.3})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            for(let i=0; i<60; i++) particles.push(new Particle());
+        }
+
+        function createTapSparkle(e) {
+            for(let i=0; i<15; i++) {
+                particles.push(new Particle(e.clientX, e.clientY, true));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, i) => {
+                p.update();
+                p.draw();
+                if(p.opacity <= 0) particles.splice(i, 1);
+                // Reposicionar partículas de fondo
+                if(!p.isTap) {
+                    if(p.x < 0) p.x = canvas.width;
+                    if(p.x > canvas.width) p.x = 0;
+                    if(p.y < 0) p.y = canvas.height;
+                    if(p.y > canvas.height) p.y = 0;
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+        initParticles();
+        animate();
+
+        // --- REVEAL ON SCROLL ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
