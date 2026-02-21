@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para Marissa - Video</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&family=Inter:wght@300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #ffb3c1;
+            --bg: #000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- INTRO CINEMÁTICA --- */
+        #video-intro {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .intro-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: revealText 4s forwards;
+            padding: 0 30px;
+        }
+
+        @keyframes revealText {
+            20% { opacity: 1; transform: translateY(0); filter: blur(0); }
+            80% { opacity: 1; transform: translateY(0); filter: blur(0); }
+            100% { opacity: 0; transform: translateY(-20px); filter: blur(10px); }
+        }
+
+        /* --- CONTENEDOR DE VIDEO --- */
+        .video-wrapper {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Esto hace que llene la pantalla del iPhone sin bordes negros */
+        }
+
+        /* --- BOTÓN VOLVER (POST-VIDEO) --- */
+        #back-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 100;
+            display: none; /* Se activa por JS */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            animation: fadeIn 2s forwards;
+        }
+
+        .final-msg {
+            font-family: 'Playfair Display', serif;
+            color: var(--accent);
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .btn-back {
+            padding: 15px 40px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .btn-back:active {
+            transform: scale(0.9);
+            background: white;
+            color: black;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="video-intro">
+        <div class="intro-text">
+            "Hay momentos que merecen ser recordados para siempre..."
+        </div>
+    </div>
+
+    <div class="video-wrapper" id="v-wrapper">
+        <video id="miVideo" playsinline>
+            <source src="video_marissa.mp4" type="video/mp4">
+            Tu navegador no soporta video.
+        </video>
+    </div>
+
+    <div id="back-layer">
+        <h2 class="final-msg">Te amo, Marissa.</h2>
+        <a href="fotos.html" class="btn-back">Volver al inicio</a>
+    </div>
+
+    <script>
+        const video = document.getElementById('miVideo');
+        const intro = document.getElementById('video-intro');
+        const wrapper = document.getElementById('v-wrapper');
+        const backLayer = document.getElementById('back-layer');
+
+        // 1. Iniciar la secuencia tras la animación de texto
+        setTimeout(() => {
+            intro.style.opacity = '0';
+            wrapper.style.opacity = '1';
+            
+            // Intentar reproducir video (algunos navegadores requieren interacción previa)
+            video.play().catch(error => {
+                console.log("Autoplay bloqueado, esperando toque.");
+                // Si el iPhone bloquea el video, se reproducirá al primer toque
+                document.body.addEventListener('click', () => video.play(), {once: true});
+            });
+            
+            setTimeout(() => intro.remove(), 1500);
+        }, 4000); // Duración de la intro de texto
+
+        // 2. Detectar cuando el video termina
+        video.onended = function() {
+            // Suavizar la salida del video
+            wrapper.style.transition = 'opacity 1s';
+            wrapper.style.opacity = '0.3';
+            
+            // Mostrar la capa de "Volver"
+            backLayer.style.display = 'flex';
+        };
+    </script>
+</body>
+</html>
