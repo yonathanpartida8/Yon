@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nuestros Momentos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent-pink: #ff4d6d;
+            --light-pink: #ff99ac;
+            --text-color: #f0f0f0;
+            --background-dark: #1a1a2e;
+            --card-background: rgba(255, 255, 255, 0.08); /* Darker glassmorphism */
+            --border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--background-dark);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-color);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            position: relative;
+        }
+
+        /* Estrellas de fondo animadas */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .star {
+            position: absolute;
+            background-color: var(--light-pink);
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 4s infinite ease-in-out;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 0.8; transform: scale(1); }
+        }
+
+        /* Título Principal */
+        h1 {
+            margin-top: 60px;
+            margin-bottom: 30px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-size: 2.2em;
+            text-align: center;
+            z-index: 1;
+        }
+
+        /* Contenedor de Galería con Parallax */
+        .gallery-container {
+            width: 100%;
+            max-width: 375px; /* Ancho típico de iPhone */
+            padding: 20px 0;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch; /* Desplazamiento suave en iOS */
+            flex-grow: 1;
+            z-index: 1;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* 2 columnas responsivas */
+            gap: 25px;
+            padding: 10px;
+            justify-content: center;
+            perspective: 1000px;
+        }
+
+        /* Tarjeta */
+        .card {
+            width: 100%;
+            padding-top: 130%; /* Para mantener relación de aspecto 3:4 */
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 20px;
+            will-change: transform, opacity; /* Optimización para animaciones */
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            animation: card-appear 0.6s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        /* Retraso de animación para cada tarjeta */
+        .card:nth-child(2n) { animation-delay: 0.1s; }
+        .card:nth-child(3n) { animation-delay: 0.2s; }
+        .card:nth-child(4n) { animation-delay: 0.3s; }
+        /* ... y así sucesivamente para más tarjetas */
+
+        @keyframes card-appear {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-back {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            transform: rotateY(180deg);
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9em;
+            line-height: 1.5;
+            box-sizing: border-box;
+        }
+
+        .scroll-text {
+            height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-right: 5px;
+        }
+        /* Scrollbar oculto para iOS */
+        .scroll-text::-webkit-scrollbar {
+            display: none;
+        }
+        .scroll-text {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        /* Música Player */
+        .music-player {
+            position: sticky;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-background);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 10px 25px;
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 30px; /* Separación del contenido */
+            margin-bottom: 20px;
+        }
+
+        #musicBtn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.1em;
+            cursor: pointer;
+            outline: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #musicBtn span {
+            transition: transform 0.2s ease-in-out;
+        }
+        #musicBtn:active span {
+            transform: scale(0.9);
+        }
+
+        /* Botón de Acción */
+        .btn-action {
+            background: linear-gradient(45deg, var(--accent-pink) 0%, var(--light-pink) 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-decoration: none;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            z-index: 1;
+        }
+
+        .btn-action:active {
+            transform: scale(0.95);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Corazones Voladores */
+        .heart {
+            position: absolute;
+            font-size: 2em;
+            color: var(--light-pink);
+            opacity: 0;
+            animation: float-heart 5s forwards;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        @keyframes float-heart {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            20% { opacity: 1; transform: translateY(-20%) scale(1); }
+            100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
+        }
+
+        /* Animación de entrada para el título */
+        @keyframes title-fade-in {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            animation: title-fade-in 1s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+
+    <h1>Nuestros Momentos Inolvidables ✨</h1>
+
+    <div class="gallery-container">
+        <div class="gallery" id="card-gallery">
+            <script>
+                const textos = [
+                    "Nuestro primer café juntos...",
+                    "Ese viaje espontáneo que hicimos...",
+                    "Tu sonrisa ilumina mi mundo...",
+                    "Juntos, siempre es una aventura...",
+                    "Cada día a tu lado es un regalo...",
+                    "Mirando hacia el futuro contigo..."
+                ];
+
+                for (let i = 1; i <= 6; i++) {
+                    document.write(`
+                        <div class="card" onclick="flipCard(this)">
+                            <div class="card-face card-front">
+                                <img src="imagen${i}.jpg" alt="Foto ${i}">
+                            </div>
+                            <div class="card-face card-back">
+                                <div class="scroll-text">
+                                    <p>${textos[i-1]}</p>
+                                    <p>Aquí puedes escribir una historia más larga o un recuerdo especial asociado a esta imagen. El texto es desplazable.</p>
+                                    <p>¡Sigue leyendo para descubrir más sobre este momento mágico!</p>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                }
+            </script>
+        </div>
+    </div>
+
+    <div class="music-player">
+        <audio id="miMusica" loop preload="auto">
+            <source src="musica.mp3" type="audio/mpeg">
+            Tu navegador no soporta audio.
+        </audio>
+        <button onclick="toggleMusic()" id="musicBtn">
+            <span id="musicIcon">🎵</span> <span id="musicText">Toca para Música</span>
+        </button>
+    </div>
+
+    <a href="otro_archivo.html" class="btn-action">Explorar más momentos ❤️</a>
+
+    <script>
+        // Función para girar la tarjeta
+        function flipCard(card) {
+            card.classList.toggle('flipped');
+            // Generar un corazón al voltear la tarjeta
+            createHeart(card.getBoundingClientRect());
+        }
+
+        // Función para la música
+        const musica = document.getElementById('miMusica');
+        const musicBtn = document.getElementById('musicBtn');
+        const musicIcon = document.getElementById('musicIcon');
+        const musicText = document.getElementById('musicText');
+        let musicStarted = false;
+
+        function toggleMusic() {
+            if (musica.paused) {
+                musica.play().then(() => {
+                    musicIcon.textContent = "⏸️";
+                    musicText.textContent = "Pausar Magia";
+                    musicStarted = true;
+                }).catch(error => {
+                    console.error("Error al reproducir la música:", error);
+                    // Esto puede ocurrir si el navegador bloquea la reproducción automática
+                    // Puedes añadir un mensaje al usuario aquí si quieres
+                });
+            } else {
+                musica.pause();
+                musicIcon.textContent = "🎵";
+                musicText.textContent = "Toca para Música";
+            }
+        }
+
+        // Animación de destellos de estrellas en el fondo
+        const starsContainer = document.querySelector('.stars');
+        function createStar() {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = star.style.height = `${Math.random() * 3 + 1}px`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 4}s`;
+            starsContainer.appendChild(star);
+
+            setTimeout(() => star.remove(), 5000); // Eliminar estrella después de su animación
+        }
+        setInterval(createStar, 200); // Crear una estrella cada 200ms
+
+        // Corazones voladores
+        function createHeart(rect) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.textContent = '❤️';
+            document.body.appendChild(heart);
+
+            // Posicionar el corazón cerca del centro de la tarjeta volteada
+            heart.style.left = `${rect.left + rect.width / 2}px`;
+            heart.style.top = `${rect.top + rect.height / 2}px`;
+
+            // Hacer que los corazones floten aleatoriamente
+            const startX = rect.left + rect.width / 2 - 10;
+            const startY = rect.top + rect.height / 2 - 10;
+            const endX = startX + (Math.random() - 0.5) * 200; // Flota a los lados
+            const endY = startY - window.innerHeight * 0.8; // Sube casi hasta arriba
+
+            heart.style.setProperty('--start-x', `${startX}px`);
+            heart.style.setProperty('--start-y', `${startY}px`);
+            heart.style.setProperty('--end-x', `${endX}px`);
+            heart.style.setProperty('--end-y', `${endY}px`);
+
+            // Ajustar la animación para que use las variables
+            heart.style.animation = `float-heart 4s ease-out forwards`;
+            
+            setTimeout(() => heart.remove(), 4000); // Eliminar corazón después de su animación
+        }
+
+        // Parallax para las tarjetas al hacer scroll
+        const galleryContainer = document.querySelector('.gallery-container');
+        galleryContainer.addEventListener('scroll', () => {
+            const scrollPos = galleryContainer.scrollTop;
+            document.querySelectorAll('.card').forEach(card => {
+                const cardRect = card.getBoundingClientRect();
+                const offset = cardRect.top * 0.1; // Ajusta este valor para mayor o menor efecto
+                card.style.transform = `translateY(${offset}px) ${card.classList.contains('flipped') ? 'rotateY(180deg)' : ''}`;
+            });
+        });
+
+        // Asegurar que la música se pueda reproducir después de la interacción del usuario
+        // iOS bloquea la reproducción automática hasta que el usuario interactúa
+        document.body.addEventListener('touchstart', () => {
+            if (!musicStarted) {
+                musica.play().then(() => {
+                    musicIcon.textContent = "⏸️";
+                    musicText.textContent = "Pausar Magia";
+                    musicStarted = true;
+                }).catch(error => {
+                    console.error("No se pudo iniciar la reproducción automática:", error);
+                });
+            }
+        }, { once: true });
+        
+    </script>
+</body>
+</html>
